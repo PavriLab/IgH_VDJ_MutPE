@@ -1,6 +1,6 @@
 # MutPE
 
-The pipeline is structured as a Bash script that calls other scripts and submits jobs to the SLURM scheduler.
+The pipeline is structured as a Bash script that calls other scripts and submits jobs to the SLURM scheduler. Within the script, different sets of tasks are grouped as modules that can be enebled or disabled to facilitate partial reruns.
 
 
 # Dependencies
@@ -17,4 +17,3 @@ Dependencies are assumed to be loaded in advance in the execution environment, t
 * flash 1.2.11 (the read-pair merging tool, not Adobe Flash!)
 * bowtie2 2.3.5
 * samtools 1.9
-* 
