@@ -2,6 +2,7 @@
 
 The pipeline is structured as a Bash script that calls other scripts and submits jobs to the SLURM scheduler. Within the script, different sets of tasks are grouped as modules that can be enebled or disabled to facilitate partial reruns.
 
+Certain paths and property values are hard-coded in the pipeline and/or its scripts and can be selected for a predefined set of VDJ contexts. New sets of predefined values will need to be created and added to the code in the relevant places for use with new VDJ contexts.
 
 # Dependencies
 
