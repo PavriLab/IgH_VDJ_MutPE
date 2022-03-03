@@ -5,7 +5,7 @@ library(data.table)
 
 args <- commandArgs(trailingOnly = TRUE)
 # args <- c('~/test.substract.stats', 'B18', 'na:0:0', '0.3')
-# args <- c('/Volumes/groups/pavri/Kimon/ursi/mutPEseq/round5/process_vdj/in-vitro/wt/86746_B18_AIDER_r2.aln.point.stats', 'B18', '-:0:0', '0.3')
+# args <- c('/Volumes/groups/pavri/Kimon/ursi/mutPEseq/round6/process/HDR1/pileup/101095_B18_HDR1_NP_e1r.aln.1-1.point.stats', 'B18', 'HDR1:2301:6', '1')
 
 sf <- args[1]                       # .stats input file: seq \t pos \t type \t count \t depth
 vdj <- args[2]                      # B18, B18_1a, B18_1b, CH12, CH12_1, CH12_1a, CH12_1b, Ramos
@@ -231,21 +231,22 @@ posdata <- posdata[! grepl('\\+|-', type, perl=TRUE), ]
 ##############
 
 # Calculate frequencies 
+posdata[(!mutated), freq := 0]  # reference
 posdata[(mutated), freq := count / depth]
-posdata[!is.finite(freq), freq := 0]      # Missing count, or lack of coverage
+posdata[!is.finite(freq), freq := 0]      # lack of coverage
 
 # Remove mutations with high frequencies, as likely clonal SNPs.
 n <- nrow(posdata[(mutated),])
-posdata <- posdata[!mutated | (mutated & freq <= allelecutoff), ]
+posdata <- posdata[freq <= allelecutoff, ] # DO NOT use mutated to select rows! it is NA for coordinates within the shift correction
 diffn <- n - nrow(posdata[(mutated),])
 if (diffn > 0)
 	message(paste0("Mutations removed as likely clonal SNPs (>=", allelecutoff, "): ", diffn, " / ", n))
 
 # Aggregate frequencies by position
-posdata[(mutated), aggrcount := sum(count), by=c('chr', 'newpos')]    # Aggrecated mutation count (all mutation types per position)
-posdata[is.na(aggrcount), aggrcount := 0]
+posdata[(mutated), aggrcount := sum(count), by=c('chr', 'newpos')]    # Aggregated mutation count (all mutation types per position)
+posdata[is.na(aggrcount), aggrcount := 0] # no mutations
 posdata[, aggrfreq := aggrcount / depth]
-
+posdata[!is.finite(aggrcount), aggrcount := 0]  # no coverage
 
 ###########
 # Patterns
