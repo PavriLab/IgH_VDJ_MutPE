@@ -213,7 +213,7 @@ posdata[is.na(count), count := 0]
 posdata[is.na(depth), depth := 0]
 
 # Create relative positions
-posdata[, plotpos := pos - showfrom + 1]
+posdata[, plotpos := newpos - showfrom + 1]
 
 
 ##############
