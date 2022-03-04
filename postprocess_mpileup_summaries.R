@@ -5,7 +5,7 @@ library(data.table)
 
 args <- commandArgs(trailingOnly = TRUE)
 # args <- c('~/test.substract.stats', 'B18', 'na:0:0', '0.3')
-# args <- c('/Volumes/groups/pavri/Kimon/ursi/mutPEseq/round6/process/HDR1/pileup/101095_B18_HDR1_NP_e1r.aln.1-1.point.stats', 'B18', 'HDR1:2301:6', '1')
+# args <- c('/Volumes/groups/pavri/Kimon/ursi/B18_MutPE/round6/process/HDR1/pileup/101095_B18_HDR1_NP_e1r.aln.point.stats', 'B18', 'HDR1:2301:6', '1')
 
 sf <- args[1]                       # .stats input file: seq \t pos \t type \t count \t depth
 vdj <- args[2]                      # B18, B18_1a, B18_1b, CH12, CH12_1, CH12_1a, CH12_1b, Ramos
@@ -207,8 +207,10 @@ posdata <- posdata[newpos >= showfrom & newpos <= showto, ]
 
 # Fill in gaps in the coordinates. Prevents plot lines from jumping across gaps.
 setorder(posdata, chr, newpos)
-posdata <- merge(posdata, data.table(newpos=showfrom:showto), by="newpos", all=TRUE)
-posdata[is.na(chr), chr := posdata[!is.na(chr), chr][1]]
+posdata <- merge(posdata, 
+								 data.table(newpos=showfrom:showto), 
+								 by="newpos", all=TRUE)
+posdata[is.na(chr), chr := posdata[newpos == posdata[is.na(chr), newpos - 1][1], chr][1] ] # whatever chr is in the position before the deletion
 posdata[is.na(count), count := 0]
 posdata[is.na(depth), depth := 0]
 
@@ -224,7 +226,7 @@ posdata[, plotpos := newpos - showfrom + 1]
 posdata[grepl('^[NACGT]$', type), type := 'ref']
 posdata[, mutated := (type != 'ref')]
 posdata <- posdata[! grepl('\\+|-', type, perl=TRUE), ]
-
+posdata[is.na(mutated), mutated := FALSE]  # regions deleted from reference,
 
 ##############
 # Frequencies
@@ -233,11 +235,11 @@ posdata <- posdata[! grepl('\\+|-', type, perl=TRUE), ]
 # Calculate frequencies 
 posdata[(!mutated), freq := 0]  # reference
 posdata[(mutated), freq := count / depth]
-posdata[!is.finite(freq), freq := 0]      # lack of coverage
+posdata[!is.finite(freq), freq := 0]      # lack of coverage, redundant after setting mutated to FALSE on those
 
 # Remove mutations with high frequencies, as likely clonal SNPs.
 n <- nrow(posdata[(mutated),])
-posdata <- posdata[freq <= allelecutoff, ] # DO NOT use mutated to select rows! it is NA for coordinates within the shift correction
+posdata <- posdata[freq <= allelecutoff, ] # reference bases have frequency 0
 diffn <- n - nrow(posdata[(mutated),])
 if (diffn > 0)
 	message(paste0("Mutations removed as likely clonal SNPs (>=", allelecutoff, "): ", diffn, " / ", n))
@@ -246,7 +248,8 @@ if (diffn > 0)
 posdata[(mutated), aggrcount := sum(count), by=c('chr', 'newpos')]    # Aggregated mutation count (all mutation types per position)
 posdata[is.na(aggrcount), aggrcount := 0] # no mutations
 posdata[, aggrfreq := aggrcount / depth]
-posdata[!is.finite(aggrcount), aggrcount := 0]  # no coverage
+posdata[!is.finite(aggrfreq), aggrfreq := 0]  # no coverage
+
 
 ###########
 # Patterns
@@ -259,16 +262,16 @@ posdata[(mutated), muttype := 'A:T']
 posdata[mutated & (grepl('C>', type, fixed=TRUE) | grepl('G>', type, fixed=TRUE)), muttype := 'G:C']
 # by presence on a warm or hot spot
 posdata[(mutated), sweetspot := FALSE]
-posdata[mutated & grepl('C>', type, fixed=TRUE) & pos %in% bed[fw & origin %in% c('hot', 'warm'), x], sweetspot := TRUE]
-posdata[mutated & grepl('G>', type, fixed=TRUE) & pos %in% bed[(!fw) & origin %in% c('hot', 'warm'), x], sweetspot := TRUE]
+posdata[mutated & grepl('C>', type, fixed=TRUE) & newpos %in% bed[fw & origin %in% c('hot', 'warm'), x], sweetspot := TRUE]
+posdata[mutated & grepl('G>', type, fixed=TRUE) & newpos %in% bed[(!fw) & origin %in% c('hot', 'warm'), x], sweetspot := TRUE]
 posdata[(mutated), sourspot := FALSE]
 posdata[mutated & grepl('C>', type, fixed=TRUE), 
-				sourspot := vapply(posdata[mutated & grepl('C>', type, fixed=TRUE), pos], 
+				sourspot := vapply(posdata[mutated & grepl('C>', type, fixed=TRUE), newpos], 
 													 function(p) {
 													 	any(bed[fw & origin == 'cold', p > xleft & p < xright]) # in position in the cold pattern
 													 }, logical(1)) ] # Remember, the x have been padded with a decimal value
 posdata[mutated & grepl('G>', type, fixed=TRUE), 
-				sourspot := vapply(posdata[mutated & grepl('G>', type, fixed=TRUE), pos], 
+				sourspot := vapply(posdata[mutated & grepl('G>', type, fixed=TRUE), newpos], 
 													 function(p) {
 													 	any(bed[(!fw) & origin == 'cold', p > xleft & p < xright])  # in position in the cold pattern
 													 }, logical(1)) ] # Remember, the x have been padded with a decimal value
@@ -290,7 +293,7 @@ rds <- list(vdj=vdj,
 			xmin=posdata[1, plotpos] - 1,           # In case filtering loses positions later, this gives me the X dimensions of the area.
 			xmax=posdata[nrow(posdata), plotpos],   # In case filtering loses positions later, this gives me the X dimensions of the area.
 			allelecutoff=allelecutoff,
-			posdata=posdata[(mutated), ], 
+			posdata=posdata, 
 			bed=bed, 
 			cdr=cdrs)
 

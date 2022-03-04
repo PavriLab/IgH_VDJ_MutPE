@@ -72,14 +72,18 @@ for (sf in args) {
 	
 	# Fix number, order and colour of categories for point mutations and combined files.
 	if(!any('catlev' == names(rds))){
-		rds$catlev <- c("C:G in WRCH/DGYW", "C:G in WRCH/DGYW and SYC/GRS", "C:G in SYC/GRS", "other C:G", "A:T")
+		rds$catlev <- c("C:G in WRCH/DGYW", 
+										# "C:G in WRCH/DGYW and SYC/GRS", 
+										# "C:G in SYC/GRS", 
+										"other C:G", 
+										"A:T")
 	}
 	if(!any('catcol' == names(rds))){
 		rds$catcol <- c("C:G in WRCH/DGYW"="#DD0000", 
-										"C:G in WRCH/DGYW and SYC/GRS"="black", 
-										"C:G in SYC/GRS"="black", 
+										# "C:G in WRCH/DGYW and SYC/GRS"="black", 
+										# "C:G in SYC/GRS"="black", 
 										"other C:G"="black", 
-										"A:T"="grey60")
+										"A:T"="grey50")
 	}
 	
 	

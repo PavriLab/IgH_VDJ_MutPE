@@ -34,12 +34,16 @@ for (sf in files) {
   
   # Reuse order and colour coding from contingency table plots if present.
   if(! any('catlev' == names(rds))) {
-    rds$catlev <- c("C:G in WRCH/DGYW", "C:G in WRCH/DGYW and SYC/GRS", "C:G in SYC/GRS", "other C:G", "A:T")
+    rds$catlev <- c("C:G in WRCH/DGYW", 
+                    # "C:G in WRCH/DGYW and SYC/GRS", 
+                    # "C:G in SYC/GRS", 
+                    "other C:G", 
+                    "A:T")
   }
   if(! any('catcol' == names(rds))) {
     rds$catcol <- c("C:G in WRCH/DGYW"="#DD0000", 
-                    "C:G in WRCH/DGYW and SYC/GRS"="black", 
-                    "C:G in SYC/GRS"="black", 
+                    # "C:G in WRCH/DGYW and SYC/GRS"="black", 
+                    # "C:G in SYC/GRS"="black", 
                     "other C:G"="black", 
                     "A:T"="grey60")
   }
@@ -67,7 +71,7 @@ for (sf in files) {
   #######################
   
   # Reshape overall mutation frequencies
-  cont1 <- melt(as.data.table(rds$mutcntg), id.vars='mut', variable.name='ation', value.name='Frequency')
+  cont1 <- melt(as.data.table(rds$mutcntg), id.vars='mut', variable.name='Mutation', value.name='Frequency')
   setnames(cont1, c('to', 'from', 'Frequency'))
   cont1[, to := sub('to_', '', to, fixed=TRUE)]
   cont1[, from := sub('from_', '', from, fixed=TRUE)]
@@ -96,9 +100,9 @@ for (sf in files) {
   names(cont2) <- 'Frequency'
   cont2[, Category := names(rds$patcntg)]
   cont2[Category=='hot_CG', Category := 'C:G in WRCH/DGYW']
-  cont2[Category=='cold_CG', Category := 'C:G in SYC/GRS']
+  # cont2[Category=='cold_CG', Category := 'C:G in SYC/GRS']
   cont2[Category=='other_CG', Category := 'other C:G']
-  cont2[Category=='ambiguous_CG', Category := 'C:G in WRCH/DGYW and SYC/GRS']
+  # cont2[Category=='ambiguous_CG', Category := 'C:G in WRCH/DGYW and SYC/GRS']
   cont2[Category=='AT', Category := 'A:T'] 
   cont2[, Category := ordered(Category, levels=rds$catlev)]
   cont2[, Frequency := Frequency/sum(Frequency)]
@@ -114,7 +118,11 @@ for (sf in files) {
     geom_text(aes(y=texty*100, label=round(Frequency*100,1), colour=Category), size=rel(2.5)) +
     scale_y_continuous(expand=c(0, 0)) +
     scale_fill_manual(values=rds$catcol) +
-    scale_colour_manual(values=c('C:G in WRCH/DGYW'='white', 'other C:G'='white', 'A:T'='black', 'C:G in SYC/GRS'='black', 'C:G in WRCH/DGYW and SYC/GRS'='black')) +
+    scale_colour_manual(values=c('C:G in WRCH/DGYW'='white', 
+                                 'other C:G'='white', 
+                                 # 'C:G in SYC/GRS'='black', 
+                                 # 'C:G in WRCH/DGYW and SYC/GRS'='black', 
+                                 'A:T'='black')) +
     labs(x='', y='% of mutations') +
     theme_bw() +
     theme(legend.position='right',
@@ -131,13 +139,14 @@ for (sf in files) {
   #######################################
   
   # Decreasing
-  clump <- unique(rds$posdata[, .(pos, aggrfreq, mutcat)])
+  clump <- unique(rds$posdata[(mutated), .(pos, aggrfreq, mutcat)])
   setorder(clump, -aggrfreq, na.last = TRUE)
   clump[, pos := factor(pos, ordered=TRUE, levels=pos)]
   
-  pclump <- ggplot(clump, aes(x=pos, y=aggrfreq, fill=mutcat)) +
+  pclump <- ggplot(clump, aes(x=pos, y=aggrfreq, fill=mutcat, colour=mutcat)) +
     geom_bar(stat='identity') +
     scale_fill_manual(values=rds$catcol) +
+    scale_colour_manual(values=rds$catcol) +
     labs(x='Reordered positions', y='Mutation Frequency') +
     theme_minimal() +
     theme(legend.position='bottom',
