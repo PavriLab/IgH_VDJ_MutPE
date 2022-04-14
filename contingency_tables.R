@@ -4,11 +4,12 @@ library(data.table)
 library(ggplot2)
 
 args <- commandArgs(trailingOnly = TRUE)
-# args <- c('~/test.substract.stats.RDS')
+# args <- c("/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86726_B18_r1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86737_B18_AIDKO_s2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86727_B18_r2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86742_B18_AIDER_e1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86728_B18_AIDKO_r1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86743_B18_AIDER_e2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86729_B18_AIDKO_r2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86744_B18_AIDER_r1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86734_B18_s1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86745_B18_AIDER_s1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86735_B18_s2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86746_B18_AIDER_r2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86736_B18_AIDKO_s1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86747_B18_AIDER_s2.aln.point.stats.RDS")
 
 for (sf in args) {
 	# sf <- args[1]    # .stats.RDS post-processed mpileup summary
-	
+	message(sf)
+  
 	rds <- readRDS(sf)
 	
 	
@@ -72,14 +73,18 @@ for (sf in args) {
 	
 	# Fix number, order and colour of categories for point mutations and combined files.
 	if(!any('catlev' == names(rds))){
-		rds$catlev <- c("C:G in WRCH/DGYW", "C:G in WRCH/DGYW and SYC/GRS", "C:G in SYC/GRS", "other C:G", "A:T")
+		rds$catlev <- c("C:G in WRCH/DGYW", 
+										# "C:G in WRCH/DGYW and SYC/GRS", 
+										# "C:G in SYC/GRS", 
+										"other C:G", 
+										"A:T")
 	}
 	if(!any('catcol' == names(rds))){
 		rds$catcol <- c("C:G in WRCH/DGYW"="#DD0000", 
-										"C:G in WRCH/DGYW and SYC/GRS"="black", 
-										"C:G in SYC/GRS"="black", 
+										# "C:G in WRCH/DGYW and SYC/GRS"="black", 
+										# "C:G in SYC/GRS"="black", 
 										"other C:G"="black", 
-										"A:T"="grey60")
+										"A:T"="grey50")
 	}
 	
 	
