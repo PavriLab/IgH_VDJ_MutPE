@@ -167,20 +167,23 @@ def autonumerate(things):
     Returns:
         [str]: A corrected list of strings.
     """
-    c = Counter(things);
-    # Because I use decrement, reversing the list ensures first instance gets smallest number.
-    things.reverse()
-    for i, t in enumerate(things):
-        n = c[t]
-        if n > 1:  # The first occurrence is not suffixed.
-            newname = t +'_' + str(n)
-            while newname in things:  # Check for already present suffixes
-                n += 1
-                newname = t +'_' + str(n)
-            things[i] = newname
-            c[t] -= 1
-    things.reverse()
+    # c = Counter(things);
+    # # Because I use decrement, reversing the list ensures first instance gets smallest number.
+    # things.reverse()
+    # for i, t in enumerate(things):
+    #     n = c[t]
+    #     if n > 1:  # The first occurrence is not suffixed.
+    #         newname = t +'_' + str(n)
+    #         while newname in things:  # Check for already present suffixes
+    #             n += 1
+    #             newname = t +'_' + str(n)
+    #         things[i] = newname
+    #         c[t] -= 1
+    # things.reverse()
     return things
+    # Only for this copy of fileutilities. Enumerating inadvertantly messes up filenames when a sample is used in muliple substractions.
+    # The option for verbatim alias fields was added to newer versions I think but I do not want to update version and risk breaking anything from other changes. 
+
 
 
 def make_names(items, parameters):
@@ -1169,7 +1172,7 @@ class FilesList(list):
             return None
         else:
             return os.path.splitext(os.path.basename(str(pathname)))[0]
-
+            
     def sorted(self):
         """Sorted copy.
 
