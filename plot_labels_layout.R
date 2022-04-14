@@ -47,8 +47,9 @@ pdf(file=paste0(outpref, '.labels_layout.pdf'), height=3, width=8)
 
 for (sf in files) {
 	# sf <- files[1]
+	message(sf)
+
 	rds <- readRDS(sf)
-	
 	
 	####################
 	# Order and colours
@@ -56,14 +57,18 @@ for (sf in files) {
 	
 	# Reuse order and colour coding from contingency table plots if present.
 	if(! any('catlev' == names(rds))) {
-		rds$catlev <- c("C:G in WRCH/DGYW", "C:G in WRCH/DGYW and SYC/GRS", "C:G in SYC/GRS", "other C:G", "A:T")
+		rds$catlev <- c("C:G in WRCH/DGYW", 
+		#"C:G i'n WRCH/DGYW and SYC/GRS", 
+		#"C:G i'n SYC/GRS",
+		"other C:G", 
+		"A:T")
 	}
 	if(! any('catcol' == names(rds))) {
 		rds$catcol <- c("C:G in WRCH/DGYW"="#DD0000", 
-										"C:G in WRCH/DGYW and SYC/GRS"="black", 
-										"C:G in SYC/GRS"="black", 
-										"other C:G"="black", 
-										"A:T"="grey60")
+						#"C:G in WRCH/DGYW and SYC/GRS"="black", 
+						#"C:G in SYC/GRS"="black", 
+						"other C:G"="black", 
+						"A:T"="grey50")
 	}
 	
 	rds$posdata[, mutcat := factor(mutcat, ordered=TRUE, levels=rds$catlev)]
