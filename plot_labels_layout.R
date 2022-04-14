@@ -7,7 +7,7 @@ library(patchwork)
 
 
 args <- commandArgs(trailingOnly = TRUE)
-# args <- c('0.97', 'auto', 'auto', '~/test.substract', '/Volumes/groups/pavri/Kimon/ursi/B18_MutPE/round7/process/invitro/substractions/134329_B18_d4_1_134344_B18_e1.sub.1-1.point.stats.RDS', '/Volumes/groups/pavri/Kimon/ursi/B18_MutPE/round7/process/invitro/substractions/134330_B18_d4_2_134345_B18_e2.sub.1-1.point.stats.RDS')
+# args <- c('0.97', 'auto', 'auto', '~/test.substract', '/Volumes/groups/pavri/Kimon/ursi/mutPEseq/round6/process/HDR1/pileup/101095_B18_HDR1_NP_e1r.aln.point.stats.RDS')
 
 flagtop <- as.numeric(args[1])  # 1-a top percentile of frequencies for which to add position markers
 outpref <- args[4]              # file /path/prefix. Ending will be appended automatically.

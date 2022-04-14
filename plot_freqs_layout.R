@@ -7,7 +7,7 @@ library(patchwork)
 
 
 args <- commandArgs(trailingOnly = TRUE)
-# args <- c('NULL', '~/test.substract', '~/test.substract.stats.RDS')
+# args <- c('NULL', '/groups/pavri/Kimon/ursi/mutPEseq/round5/results/in-vitro/wt/wt.all.point', "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86726_B18_r1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86737_B18_AIDKO_s2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86727_B18_r2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86742_B18_AIDER_e1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86728_B18_AIDKO_r1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86743_B18_AIDER_e2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86729_B18_AIDKO_r2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86744_B18_AIDER_r1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86734_B18_s1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86745_B18_AIDER_s1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86735_B18_s2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86746_B18_AIDER_r2.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86736_B18_AIDKO_s1.aln.point.stats.RDS", "/groups/pavri/Kimon/ursi/mutPEseq/round5/process/in-vitro/wt/pileup/86747_B18_AIDER_s2.aln.point.stats.RDS")
 
 if (args[1] == 'NULL') {
   hardymax <- NULL
@@ -26,6 +26,8 @@ pdf(file=paste0(outpref, '.freqs_layout.pdf'), height=6, width=12)
 
 for (sf in files) {
   # sf <- files[1]
+  message(sf)
+  
   rds <- readRDS(sf)
   
   ####################
@@ -34,12 +36,16 @@ for (sf in files) {
   
   # Reuse order and colour coding from contingency table plots if present.
   if(! any('catlev' == names(rds))) {
-    rds$catlev <- c("C:G in WRCH/DGYW", "C:G in WRCH/DGYW and SYC/GRS", "C:G in SYC/GRS", "other C:G", "A:T")
+    rds$catlev <- c("C:G in WRCH/DGYW", 
+                    # "C:G in WRCH/DGYW and SYC/GRS", 
+                    # "C:G in SYC/GRS", 
+                    "other C:G", 
+                    "A:T")
   }
   if(! any('catcol' == names(rds))) {
     rds$catcol <- c("C:G in WRCH/DGYW"="#DD0000", 
-                    "C:G in WRCH/DGYW and SYC/GRS"="black", 
-                    "C:G in SYC/GRS"="black", 
+                    # "C:G in WRCH/DGYW and SYC/GRS"="black", 
+                    # "C:G in SYC/GRS"="black", 
                     "other C:G"="black", 
                     "A:T"="grey60")
   }
@@ -67,7 +73,7 @@ for (sf in files) {
   #######################
   
   # Reshape overall mutation frequencies
-  cont1 <- melt(as.data.table(rds$mutcntg), id.vars='mut', variable.name='ation', value.name='Frequency')
+  cont1 <- melt(as.data.table(rds$mutcntg), id.vars='mut', variable.name='Mutation', value.name='Frequency')
   setnames(cont1, c('to', 'from', 'Frequency'))
   cont1[, to := sub('to_', '', to, fixed=TRUE)]
   cont1[, from := sub('from_', '', from, fixed=TRUE)]
@@ -96,9 +102,9 @@ for (sf in files) {
   names(cont2) <- 'Frequency'
   cont2[, Category := names(rds$patcntg)]
   cont2[Category=='hot_CG', Category := 'C:G in WRCH/DGYW']
-  cont2[Category=='cold_CG', Category := 'C:G in SYC/GRS']
+  # cont2[Category=='cold_CG', Category := 'C:G in SYC/GRS']
   cont2[Category=='other_CG', Category := 'other C:G']
-  cont2[Category=='ambiguous_CG', Category := 'C:G in WRCH/DGYW and SYC/GRS']
+  # cont2[Category=='ambiguous_CG', Category := 'C:G in WRCH/DGYW and SYC/GRS']
   cont2[Category=='AT', Category := 'A:T'] 
   cont2[, Category := ordered(Category, levels=rds$catlev)]
   cont2[, Frequency := Frequency/sum(Frequency)]
@@ -114,7 +120,11 @@ for (sf in files) {
     geom_text(aes(y=texty*100, label=round(Frequency*100,1), colour=Category), size=rel(2.5)) +
     scale_y_continuous(expand=c(0, 0)) +
     scale_fill_manual(values=rds$catcol) +
-    scale_colour_manual(values=c('C:G in WRCH/DGYW'='white', 'other C:G'='white', 'A:T'='black', 'C:G in SYC/GRS'='black', 'C:G in WRCH/DGYW and SYC/GRS'='black')) +
+    scale_colour_manual(values=c('C:G in WRCH/DGYW'='white', 
+                                 'other C:G'='white', 
+                                 # 'C:G in SYC/GRS'='black', 
+                                 # 'C:G in WRCH/DGYW and SYC/GRS'='black', 
+                                 'A:T'='black')) +
     labs(x='', y='% of mutations') +
     theme_bw() +
     theme(legend.position='right',
@@ -131,13 +141,14 @@ for (sf in files) {
   #######################################
   
   # Decreasing
-  clump <- unique(rds$posdata[, .(pos, aggrfreq, mutcat)])
+  clump <- unique(rds$posdata[(mutated), .(pos, aggrfreq, mutcat)])
   setorder(clump, -aggrfreq, na.last = TRUE)
   clump[, pos := factor(pos, ordered=TRUE, levels=pos)]
   
-  pclump <- ggplot(clump, aes(x=pos, y=aggrfreq, fill=mutcat)) +
+  pclump <- ggplot(clump, aes(x=pos, y=aggrfreq, fill=mutcat, colour=mutcat)) +
     geom_bar(stat='identity') +
     scale_fill_manual(values=rds$catcol) +
+    scale_colour_manual(values=rds$catcol) +
     labs(x='Reordered positions', y='Mutation Frequency') +
     theme_minimal() +
     theme(legend.position='bottom',
@@ -226,7 +237,8 @@ for (sf in files) {
               pcont1 + labs(caption=basename(sf))) )
   )
 }
-dev.off()
+
+dev.off() 
 
 
 
