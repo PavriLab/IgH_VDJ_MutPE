@@ -61,7 +61,7 @@ if (vdj == 'B18' || vdj == 'B18_1') {
 
 # # CDRs and hotspots (dev/debug paths)
 # if (vdj == 'B18' || vdj == 'B18_1' || vdj == 'B18_1a' || vdj == 'B18_1b') {
-# 	cdrs <- data.table(xleft=c(2112, 2169, 2300) - 0.3,
+# 	cdrs <- data.table(xleft=c(2112, 2169, 2310) - 0.3,
 # 										 xright=c(2126, 2216, 2353) + 0.3 )
 # 	bedfw <- fread('/Volumes/groups/pavri/Kimon/ursi/PRO/aux/VDJ_locus/B18_all_WRCH.bed', skip=1)[V1=='B1-8hi_mm10_190516_181014-most-recent' & V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
 # 	bedrv <- fread('/Volumes/groups/pavri/Kimon/ursi/PRO/aux/VDJ_locus/B18_all_DGYW.bed', skip=1)[V1=='B1-8hi_mm10_190516_181014-most-recent' & V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
@@ -88,7 +88,7 @@ if (vdj == 'B18' || vdj == 'B18_1') {
 
 ## CDRs and hotspots
 if (vdj == 'B18' || vdj == 'B18_1' || vdj == 'B18_1a' || vdj == 'B18_1b') {
-	cdrs <- data.table(xleft=c(2112, 2169, 2300) - 0.3,
+	cdrs <- data.table(xleft=c(2112, 2169, 2310) - 0.3,
 										 xright=c(2126, 2216, 2353) + 0.3 )
 	bedfw <- fread('/groups/pavri/Kimon/ursi/PRO/aux/VDJ_locus/B18_all_WRCH.bed', skip=1)[V1=='B1-8hi_mm10_190516_181014-most-recent' & V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
 	bedrv <- fread('/groups/pavri/Kimon/ursi/PRO/aux/VDJ_locus/B18_all_DGYW.bed', skip=1)[V1=='B1-8hi_mm10_190516_181014-most-recent' & V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
