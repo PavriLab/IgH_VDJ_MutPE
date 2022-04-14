@@ -361,130 +361,160 @@ if [[ "$dopost" -eq 1 ]]; then
     tail -n +2 $metrics | sort >> ${base}/${process}/tmp
     mv ${base}/${process}/tmp $metrics
     # UPDATE strata HERE
-    sbatch --time=0-0:05:00 -o /dev/null -e /dev/null ${XDIR}/plotmetrics.R $metrics ${base}/${results}/${run/\//_}_readcounds.pdf "1-1" "2-2" "3-3" "4-4" "5-15" "16-30"
+    sbatch --time=0-0:05:00 ${XDIR}/plotmetrics.R $metrics ${base}/${results}/${run/\//_}_readcounds.pdf "1-1" "2-2" "3-3" "4-4" "5-15" "16-30"
 
     echo ""
     echo "Collecting MultiQC for ${run}"
     mkdir -p ${base}/${process}/multiqc_pre
     mkdir -p ${base}/${process}/multiqc_posttrim
-    sbatch -o /dev/null -e /dev/null multiqc -f -o ${base}/${process}/multiqc_pre ${base}/${process}/fastqc_raw
+    sbatch multiqc -f -o ${base}/${process}/multiqc_pre ${base}/${process}/fastqc_raw
     if [[ $flash -eq 1 ]]; then
         mkdir -p ${base}/${process}/multiqc_postmerge
-        sbatch --time=0-0:05:00 -o /dev/null -e /dev/null multiqc -f -o ${base}/${process}/multiqc_posttrim ${base}/${process}/fastqc_posttrim
-        sbatch --time=0-0:05:00 -o /dev/null -e /dev/null multiqc -f -o ${base}/${process}/multiqc_postmerge ${base}/${process}/fastqc_postmerge ${base}/${process}/bowtie2
+        sbatch --time=0-0:05:00 multiqc -f -o ${base}/${process}/multiqc_posttrim ${base}/${process}/fastqc_posttrim
+        sbatch --time=0-0:05:00 multiqc -f -o ${base}/${process}/multiqc_postmerge ${base}/${process}/fastqc_postmerge ${base}/${process}/bowtie2
     else
-        sbatch --time=0-0:05:00 -o /dev/null -e /dev/null multiqc -f -o ${base}/${process}/multiqc_posttrim ${base}/${process}/fastqc_posttrim ${base}/${process}/bowtie2
+        sbatch --time=0-0:05:00 multiqc -f -o ${base}/${process}/multiqc_posttrim ${base}/${process}/fastqc_posttrim ${base}/${process}/bowtie2
     fi
 fi
 
 
 if [[ "$doviz" -eq 1 ]]; then
-    echo ""
+    #echo ""
+    #echo "Postprocessing ${process} mutation frequencies"
+    #${XDIR}/stats2rds.sh ${XDIR} ${base}/${process}/pileup $vdj $offsets $allelecutoff
+    #${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.point.stats.RDS
+    #echo "Plotting ${process} into ${results}"
+    #${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).all.point.Y ${base}/${process}/pileup/*aln.point.stats.RDS
+    #${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).all.point ${base}/${process}/pileup/*aln.point.stats.RDS
+    #${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).all.point ${base}/${process}/pileup/*aln.point.stats.RDS
+    #echo "BedGraphs for ${results}"
+    #mkdir -p ${base}/${results}/tracks
+    #${XDIR}/rds2bedgraph.R ${base}/${results}/tracks ${base}/${process}/pileup/*RDS
+    
+	echo ""
     # UPDATE strata HERE
-    # In retrospect using '-' for the null offset was a bad idea. With both quotation symbols already used to prevent from being seen as a flag, I can't nest it further for sbatch.
-    # echo "Postprocessing ${process} mutation frequencies"
-    sbatch --time=0-0:05:00 --mem=1G -J stats2rds -o /dev/null -e /dev/null ${XDIR}/stats2rds.sh ${XDIR} ${base}/${process}/pileup $vdj $offsets $allelecutoff
+    # In retrospect using '-' for the null offset was a bad idea. With both quotation symbols already used to prevent from being seen as a flag, I can't nest it further for sbatch, so I need a wrapper shell script.
+    echo "Postprocessing ${process} mutation frequencies"
+    sbatch --time=0-0:10:00 --mem=1G -J stats2rds ${XDIR}/stats2rds.sh ${XDIR} ${base}/${process}/pileup $vdj $offsets $allelecutoff
     wait_for_jobs stats2rds
-    sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.point.stats.RDS
-    sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
-    sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
-    sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
-    sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
-    sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
-    sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
+
+    sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.point.stats.RDS
+    sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
+    sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
+    sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
+    sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
+    sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
+    sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
     wait_for_jobs rds2cntg
 
     echo "Plotting ${process} into ${results}"
     # Plot by stratum, with shared Y scale throughout each stratum for easier comparisons.
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).all.point.Y ${base}/${process}/pileup/*aln.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).1-1.point.Y ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).2-2.point.Y ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).3-3.point.Y ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).4-4.point.Y ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).5-15.point.Y ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).16-30.point.Y ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).all.point.Y ${base}/${process}/pileup/*aln.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).1-1.point.Y ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).2-2.point.Y ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).3-3.point.Y ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).4-4.point.Y ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).5-15.point.Y ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/$(basename $process).16-30.point.Y ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
     # Same as before, but with individual Y scales
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).all.point ${base}/${process}/pileup/*aln.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).1-1.point ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).2-2.point ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).3-3.point ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).4-4.point ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).5-15.point ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).16-30.point ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
+    sbatch --time=0-0:20:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).all.point ${base}/${process}/pileup/*aln.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).1-1.point ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).2-2.point ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).3-3.point ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).4-4.point ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).5-15.point ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/$(basename $process).16-30.point ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
     # Plot by stratum, with individual Y scales and extra stats, but without labels and coverage
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).all.point ${base}/${process}/pileup/*aln.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).1-1.point ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).2-2.point ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).3-3.point ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).4-4.point ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).5-15.point ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
-    sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).16-30.point ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
+    sbatch --time=0-0:20:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).all.point ${base}/${process}/pileup/*aln.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).1-1.point ${base}/${process}/pileup/*aln.1-1.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).2-2.point ${base}/${process}/pileup/*aln.2-2.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).3-3.point ${base}/${process}/pileup/*aln.3-3.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).4-4.point ${base}/${process}/pileup/*aln.4-4.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).5-15.point ${base}/${process}/pileup/*aln.5-15.point.stats.RDS
+    sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/$(basename $process).16-30.point ${base}/${process}/pileup/*aln.16-30.point.stats.RDS
     wait_for_jobs mutpeviz
 
     echo "BedGraphs for ${results}"
     mkdir -p ${base}/${results}/tracks
-    sbatch --time=0-0:01:00 -J mutbed -o /dev/null -e /dev/null ${XDIR}/rds2bedgraph.R ${base}/${results}/tracks ${base}/${process}/pileup/*RDS
+    sbatch --time=0-0:10:00 -J mutbed ${XDIR}/rds2bedgraph.R ${base}/${results}/tracks ${base}/${process}/pileup/*RDS
 
     if [ ! -z "$subs" ] ; then
-        echo ""
+        #echo ""
+        #echo "Creating substractions for ${process}"
+        #mkdir -p ${base}/${process}/substractions
+        #mkdir -p ${base}/${results}/substractions
+        #${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.point.stats {ali}.aln.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.point.stats
+        #${XDIR}/stats2rds.sh ${XDIR} ${base}/${process}/substractions $vdj $offsets $allelecutoff
+        #${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.point.stats.RDS
+        #echo "Plotting ${process} into ${results}"
+        ## Plot by stratum, with shared Y scale throughout each stratum for easier comparisons.
+        #${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.all.point.Y ${base}/${process}/substractions/*sub.point.stats.RDS
+        #${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.all.point ${base}/${process}/substractions/*sub.point.stats.RDS
+        #${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.all.point ${base}/${process}/substractions/*sub.point.stats.RDS
+        #echo "BedGraphs for ${results}"
+        #mkdir -p ${base}/${results}/substractions/tracks
+        #${XDIR}/rds2bedgraph.R ${base}/${results}/substractions/tracks ${base}/${process}/substractions/*RDS
+        
+		echo ""
         echo "Creating substractions for ${process}"
         mkdir -p ${base}/${process}/substractions
         mkdir -p ${base}/${results}/substractions
         # UPDATE strata HERE
         # Looping cannot take just '' or '.' target values, they get auto-substituted for current directory, which breaks the unstratified.
         # So I have to keep some more of the filename, even though it's repetitive.
-        sbatch --time=0-0:02:00 --mem=1G -J mutpesub -o /dev/null -e /dev/null ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.point.stats {ali}.aln.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.point.stats
-        sbatch --time=0-0:02:00 --mem=1G -J mutpesub -o /dev/null -e /dev/null ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.1-1.point.stats {ali}.aln.1-1.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.1-1.point.stats
-        sbatch --time=0-0:02:00 --mem=1G -J mutpesub -o /dev/null -e /dev/null ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.2-2.point.stats {ali}.aln.2-2.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.2-2.point.stats
-        sbatch --time=0-0:02:00 --mem=1G -J mutpesub -o /dev/null -e /dev/null ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.3-3.point.stats {ali}.aln.3-3.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.3-3.point.stats
-        sbatch --time=0-0:02:00 --mem=1G -J mutpesub -o /dev/null -e /dev/null ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.4-4.point.stats {ali}.aln.4-4.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.4-4.point.stats
-        sbatch --time=0-0:02:00 --mem=1G -J mutpesub -o /dev/null -e /dev/null ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.5-15.point.stats {ali}.aln.5-15.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.5-15.point.stats
-        sbatch --time=0-0:02:00 --mem=1G -J mutpesub -o /dev/null -e /dev/null ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.16-30.point.stats {ali}.aln.16-30.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.16-30.point.stats
+        sbatch --time=0-0:10:00 --mem=1G -J mutpesub ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.point.stats {ali}.aln.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.point.stats
+        sbatch --time=0-0:10:00 --mem=1G -J mutpesub ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.1-1.point.stats {ali}.aln.1-1.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.1-1.point.stats
+        sbatch --time=0-0:10:00 --mem=1G -J mutpesub ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.2-2.point.stats {ali}.aln.2-2.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.2-2.point.stats
+        sbatch --time=0-0:10:00 --mem=1G -J mutpesub ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.3-3.point.stats {ali}.aln.3-3.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.3-3.point.stats
+        sbatch --time=0-0:10:00 --mem=1G -J mutpesub ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.4-4.point.stats {ali}.aln.4-4.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.4-4.point.stats
+        sbatch --time=0-0:10:00 --mem=1G -J mutpesub ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.5-15.point.stats {ali}.aln.5-15.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.5-15.point.stats
+        sbatch --time=0-0:10:00 --mem=1G -J mutpesub ${XDIR}/fileutilities.py L $subs --loop ${XDIR}/substract_stats.R {abs}.aln.16-30.point.stats {ali}.aln.16-30.point.stats ${base}/${process}/substractions/\$\(basename {abs}\)_\$\(basename {ali}\).sub.16-30.point.stats
         wait_for_jobs mutpesub
 
-        sbatch --time=0-0:05:00 --mem=1G -J stats2rds -o /dev/null -e /dev/null ${XDIR}/stats2rds.sh ${XDIR} ${base}/${process}/substractions $vdj $offsets $allelecutoff
+        sbatch --time=0-0:10:00 --mem=1G -J stats2rds ${XDIR}/stats2rds.sh ${XDIR} ${base}/${process}/substractions $vdj $offsets $allelecutoff
         wait_for_jobs stats2rds
-        sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.point.stats.RDS
-        sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
-        sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
-        sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
-        sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
-        sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
-        sbatch --time=0-0:01:00 --mem=1G -J rds2cntg -o /dev/null -e /dev/null ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
+
+        sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.point.stats.RDS
+        sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
+        sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
+        sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
+        sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
+        sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
+        sbatch --time=0-0:10:00 --mem=1G -J rds2cntg ${XDIR}/contingency_tables.R ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
         wait_for_jobs rds2cntg
 
 
         echo "Plotting ${process} into ${results}"
         # Plot by stratum, with shared Y scale throughout each stratum for easier comparisons.
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.all.point.Y ${base}/${process}/substractions/*sub.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.1-1.point.Y ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.2-2.point.Y ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.3-3.point.Y ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.4-4.point.Y ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.5-15.point.Y ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.16-30.point.Y ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.all.point.Y ${base}/${process}/substractions/*sub.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.1-1.point.Y ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.2-2.point.Y ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.3-3.point.Y ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.4-4.point.Y ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.5-15.point.Y ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 auto auto ${base}/${results}/substractions/$(basename $process).sub.16-30.point.Y ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
         # Same as before, but with individual Y scales
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.all.point ${base}/${process}/substractions/*sub.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.1-1.point ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.2-2.point ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.3-3.point ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.4-4.point ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.5-15.point ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.16-30.point ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.all.point ${base}/${process}/substractions/*sub.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.1-1.point ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.2-2.point ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.3-3.point ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.4-4.point ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.5-15.point ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_labels_layout.R 0.97 'NULL' 'NULL' ${base}/${results}/substractions/$(basename $process).sub.16-30.point ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
         # Plot by stratum, with individual Y scales and extra stats, but without labels and coverage
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.all.point ${base}/${process}/substractions/*sub.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.1-1.point ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.2-2.point ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.3-3.point ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.4-4.point ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.5-15.point ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
-        sbatch --time=0-0:02:00 -J mutpeviz -o /dev/null -e /dev/null ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.16-30.point ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.all.point ${base}/${process}/substractions/*sub.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.1-1.point ${base}/${process}/substractions/*sub.1-1.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.2-2.point ${base}/${process}/substractions/*sub.2-2.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.3-3.point ${base}/${process}/substractions/*sub.3-3.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.4-4.point ${base}/${process}/substractions/*sub.4-4.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.5-15.point ${base}/${process}/substractions/*sub.5-15.point.stats.RDS
+        sbatch --time=0-0:10:00 -J mutpeviz ${XDIR}/plot_freqs_layout.R 'NULL' ${base}/${results}/substractions/$(basename $process).sub.16-30.point ${base}/${process}/substractions/*sub.16-30.point.stats.RDS
         wait_for_jobs mutpeviz
 
 
         echo "BedGraphs for ${results}"
         mkdir -p ${base}/${results}/substractions/tracks
-        sbatch --time=0-0:05:00 -J mutbed -o /dev/null -e /dev/null ${XDIR}/rds2bedgraph.R ${base}/${results}/substractions/tracks ${base}/${process}/substractions/*RDS
+        sbatch --time=0-0:10:00 -J mutbed ${XDIR}/rds2bedgraph.R ${base}/${results}/substractions/tracks ${base}/${process}/substractions/*RDS
     fi
 fi
 
