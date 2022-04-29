@@ -99,7 +99,7 @@ for (sf in files) {
 	
 	# Determine top frequencies to flag
 	maxdepth <- rds$posdata[, max(depth, na.rm=TRUE)]
-	topthresh <- quantile(rds$posdata[, aggrfreq], flagtop)
+	topthresh <- quantile(rds$posdata[, aggrfreq], flagtop, na.rm=T)
 	rds$posdata[, istop := aggrfreq >= topthresh]
 	rds$posdata[, scaledepth := (depth / maxdepth) * ymax]
 	stopifnot(all.equal(max(rds$posdata[, scaledepth]), ymax))

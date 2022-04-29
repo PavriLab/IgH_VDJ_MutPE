@@ -47,8 +47,11 @@ with open(params.pilein) as f:
         if not pos in inDict[chr]:
             inDict[chr][pos] = Counter()
             inDict[chr][idpos] = Counter()
-        coverage[pos] = cov
-        coverage[idpos] = cov
+
+        if not chr in coverage:
+            coverage[chr] = dict()
+        coverage[chr][pos] = cov
+        coverage[chr][idpos] = cov
 
         # NOTES about the pileup format
         # Insertions : The entire insertion is shown at the position as the preceding match/mismatch.
@@ -94,7 +97,7 @@ with open(params.mutout, 'w') as mo:
         positions = sorted(mutDict[chr].keys(), key=int)
         for pos in positions:
             for mut, cnt in mutDict[chr][pos].most_common():
-                mo.write(chr + "\t" + pos + "\t" + mut + "\t" + str(cnt) + "\t" + str(coverage[pos]) + "\n")
+                mo.write(chr + "\t" + pos + "\t" + mut + "\t" + str(cnt) + "\t" + str(coverage[chr][pos]) + "\n")
 
 with open(params.indelout, 'w') as ido:
     ido.write("chr\tpos\ttype\tcount\tdepth\n")
@@ -103,4 +106,4 @@ with open(params.indelout, 'w') as ido:
         positions = sorted(inDict[chr].keys(), key=float)
         for pos in positions:
             for mut, cnt in inDict[chr][pos].most_common():
-                ido.write(chr + "\t" + pos + "\t" + mut + "\t" + str(cnt) + "\t" + str(coverage[pos]) + "\n")
+                ido.write(chr + "\t" + pos + "\t" + mut + "\t" + str(cnt) + "\t" + str(coverage[chr][pos]) + "\n")
