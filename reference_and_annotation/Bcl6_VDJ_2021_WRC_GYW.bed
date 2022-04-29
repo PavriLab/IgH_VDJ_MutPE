@@ -1,0 +1,25 @@
+track name=WRC_GYW description="[ATat][AGag][Cc]" useScore=0
+Bcl6_VDJ_wo_primers	38	41	AGC	0	+	38	41
+Bcl6_VDJ_wo_primers	60	63	TGC	0	+	60	63
+Bcl6_VDJ_wo_primers	166	169	TGC	0	+	166	169
+Bcl6_VDJ_wo_primers	244	247	AGC	0	+	244	247
+Bcl6_VDJ_wo_primers	263	266	TGC	0	+	263	266
+Bcl6_VDJ_wo_primers	339	342	AGC	0	-	7	10
+Bcl6_VDJ_wo_primers	333	336	AGC	0	-	13	16
+Bcl6_VDJ_wo_primers	327	330	AGC	0	-	19	22
+Bcl6_VDJ_wo_primers	294	297	AGC	0	-	52	55
+Bcl6_VDJ_wo_primers	282	285	AGC	0	-	64	67
+Bcl6_VDJ_wo_primers	264	267	AGC	0	-	82	85
+Bcl6_VDJ_wo_primers	245	248	TGC	0	-	101	104
+Bcl6_VDJ_wo_primers	191	194	AAC	0	-	155	158
+Bcl6_VDJ_wo_primers	185	188	AAC	0	-	161	164
+Bcl6_VDJ_wo_primers	182	185	AAC	0	-	164	167
+Bcl6_VDJ_wo_primers	161	164	AGC	0	-	185	188
+Bcl6_VDJ_wo_primers	151	154	AAC	0	-	195	198
+Bcl6_VDJ_wo_primers	128	131	AAC	0	-	218	221
+Bcl6_VDJ_wo_primers	110	113	TAC	0	-	236	239
+Bcl6_VDJ_wo_primers	105	108	AAC	0	-	241	244
+Bcl6_VDJ_wo_primers	49	52	AAC	0	-	297	300
+Bcl6_VDJ_wo_primers	39	42	AGC	0	-	307	310
+Bcl6_VDJ_wo_primers	19	22	TAC	0	-	327	330
+Bcl6_VDJ_wo_primers	1	4	TAC	0	-	345	348

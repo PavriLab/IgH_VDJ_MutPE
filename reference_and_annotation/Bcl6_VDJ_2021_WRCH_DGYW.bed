@@ -1,0 +1,21 @@
+track name=WRCH_DGYW description="[AGTagt][Gg][CTct][ATat]" useScore=0
+Bcl6_VDJ_wo_primers	0	4	TGTA	0	+	0	4
+Bcl6_VDJ_wo_primers	18	22	TGTA	0	+	18	22
+Bcl6_VDJ_wo_primers	38	42	AGCT	0	+	38	42
+Bcl6_VDJ_wo_primers	48	52	TGTT	0	+	48	52
+Bcl6_VDJ_wo_primers	104	108	TGTT	0	+	104	108
+Bcl6_VDJ_wo_primers	109	113	TGTA	0	+	109	113
+Bcl6_VDJ_wo_primers	127	131	TGTT	0	+	127	131
+Bcl6_VDJ_wo_primers	150	154	GGTT	0	+	150	154
+Bcl6_VDJ_wo_primers	160	164	GGCT	0	+	160	164
+Bcl6_VDJ_wo_primers	181	185	TGTT	0	+	181	185
+Bcl6_VDJ_wo_primers	190	194	GGTT	0	+	190	194
+Bcl6_VDJ_wo_primers	244	248	AGCA	0	+	244	248
+Bcl6_VDJ_wo_primers	263	267	TGCT	0	+	263	267
+Bcl6_VDJ_wo_primers	281	285	GGCT	0	+	281	285
+Bcl6_VDJ_wo_primers	293	297	GGCT	0	+	293	297
+Bcl6_VDJ_wo_primers	263	267	AGCA	0	-	82	86
+Bcl6_VDJ_wo_primers	244	248	TGCT	0	-	101	105
+Bcl6_VDJ_wo_primers	166	170	GGCA	0	-	179	183
+Bcl6_VDJ_wo_primers	60	64	GGCA	0	-	285	289
+Bcl6_VDJ_wo_primers	38	42	AGCT	0	-	307	311

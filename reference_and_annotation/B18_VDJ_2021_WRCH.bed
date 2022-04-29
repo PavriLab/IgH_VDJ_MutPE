@@ -1,0 +1,23 @@
+track name=WRCH description="[ATat][AGag][Cc][ACTact]" useScore=0
+B18_VDJ_wo	7	11	aact	0	+	7	11
+B18_VDJ_wo	13	17	agca	0	+	13	17
+B18_VDJ_wo	28	32	agct	0	+	28	32
+B18_VDJ_wo	37	41	agcc	0	+	37	41
+B18_VDJ_wo	55	59	agct	0	+	55	59
+B18_VDJ_wo	63	67	tgca	0	+	63	67
+B18_VDJ_wo	78	82	taca	0	+	78	82
+B18_VDJ_wo	90	94	agct	0	+	90	94
+B18_VDJ_wo	100	104	tgca	0	+	100	104
+B18_VDJ_wo	112	116	agca	0	+	112	116
+B18_VDJ_wo	170	174	tact	0	+	170	174
+B18_VDJ_wo	177	181	taca	0	+	177	181
+B18_VDJ_wo	195	199	agca	0	+	195	199
+B18_VDJ_wo	220	224	aacc	0	+	220	224
+B18_VDJ_wo	228	232	agca	0	+	228	232
+B18_VDJ_wo	233	237	agcc	0	+	233	237
+B18_VDJ_wo	237	241	taca	0	+	237	241
+B18_VDJ_wo	241	245	tgca	0	+	241	245
+B18_VDJ_wo	249	253	agca	0	+	249	253
+B18_VDJ_wo	300	304	tact	0	+	300	304
+B18_VDJ_wo	312	316	agct	0	+	312	316
+B18_VDJ_wo	324	328	tact	0	+	324	328
