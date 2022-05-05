@@ -1,0 +1,19 @@
+track name=WRCH description="[ATat][AGag][Cc][ACTact]" useScore=0
+Sg1_wo_primers	16	20	AGCC	0	+	16	20
+Sg1_wo_primers	32	36	TGCC	0	+	32	36
+Sg1_wo_primers	78	82	AGCC	0	+	78	82
+Sg1_wo_primers	82	86	AACA	0	+	82	86
+Sg1_wo_primers	137	141	AGCA	0	+	137	141
+Sg1_wo_primers	146	150	AACA	0	+	146	150
+Sg1_wo_primers	166	170	AGCC	0	+	166	170
+Sg1_wo_primers	183	187	TGCC	0	+	183	187
+Sg1_wo_primers	208	212	AGCT	0	+	208	212
+Sg1_wo_primers	220	224	AGCA	0	+	220	224
+Sg1_wo_primers	278	282	AGCA	0	+	278	282
+Sg1_wo_primers	289	293	AGCC	0	+	289	293
+Sg1_wo_primers	305	309	AGCA	0	+	305	309
+Sg1_wo_primers	310	314	TGCT	0	+	310	314
+Sg1_wo_primers	334	338	AGCC	0	+	334	338
+Sg1_wo_primers	350	354	AGCA	0	+	350	354
+Sg1_wo_primers	358	362	AGCC	0	+	358	362
+Sg1_wo_primers	365	369	AGCA	0	+	365	369

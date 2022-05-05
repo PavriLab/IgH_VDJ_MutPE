@@ -55,6 +55,36 @@ if (vdj == 'B18' || vdj == 'B18_1') {
 } else if (vdj == 'Ramos') {
 	showfrom <- 3684
 	showto <- 4375
+} else if (vdj == 'B18_VDJ_2021') {
+	showfrom <- 1
+	showto <- 360
+} else if (vdj == 'VH3-30_VDJ_2021') {
+	showfrom <- 1
+	showto <- 384
+} else if (vdj == 'VH4-59_VDJ_2021') {
+	showfrom <- 1
+	showto <- 396
+} else if (vdj == 'Ramos_VDJ_2021') {
+	showfrom <- 1
+	showto <- 375
+} else if (vdj == 'Sg1_VDJ_2021') {
+	showfrom <- 1
+	showto <- 374
+} else if (vdj == 'Ramos_IgH') {
+	showfrom <- 3834
+	showto <- 4208
+} else if (vdj == 'VH4-59') {
+	showfrom <- 3833
+	showto <- 4229
+} else if (vdj == 'B1-8hi') {
+	showfrom <- 3833
+	showto <- 4192
+} else if (vdj =='VH3-30') {
+	showfrom <- 3845
+	showto <- 4228
+} else if (vdj == 'Bcl6_VDJ_2021') {
+	showfrom <- 1
+	showto <- 349
 } else {
 	stop(paste('Unknown view window', vdj, '.'))
 }
@@ -101,14 +131,77 @@ if (vdj == 'B18' || vdj == 'B18_1' || vdj == 'B18_1a' || vdj == 'B18_1b') {
 	bedrv <- fread('/groups/pavri/Kimon/ursi/CH12_MutPE/aux/VDJ_locus/CH12_VDJ_200122_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
 	bedfwn <- fread('/groups/pavri/Kimon/ursi/CH12_MutPE/aux/VDJ_locus/CH12_VDJ_200122_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
 	bedrvn <- fread('/groups/pavri/Kimon/ursi/CH12_MutPE/aux/VDJ_locus/CH12_VDJ_200122_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
-	
-} else if (grepl('Ramos', vdj)) {
-	cdrs <- data.table(xleft=c(3899, 3980, 4107) - 0.3,
-										 xright=c(3943, 4021, 4181) + 0.3 )
-	bedfw <- fread('/groups/pavri/Kimon/ursi/Ramos_MutPE/aux/VDJ/Ramos_IgH_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
-	bedrv <- fread('/groups/pavri/Kimon/ursi/Ramos_MutPE/aux/VDJ/Ramos_IgH_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
-	bedfwn <- fread('/groups/pavri/Kimon/ursi/Ramos_MutPE/aux/VDJ/Ramos_IgH_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
-	bedrvn <- fread('/groups/pavri/Kimon/ursi/Ramos_MutPE/aux/VDJ/Ramos_IgH_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+
+} else if(vdj == "B18_VDJ_2021") {
+		cdrs <- data.table(xleft=c(91, 148, 279) - 0.3,
+										 xright=c(105, 195, 360) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/B18_VDJ_2021_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/B18_VDJ_2021_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/B18_VDJ_2021_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/B18_VDJ_2021_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'VH3-30_VDJ_2021') {
+		cdrs <- data.table(xleft=c(64, 139, 274) - 0.3,
+										 xright=c(87, 162, 336) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/VH3-30_VDJ_2021_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/VH3-30_VDJ_2021_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/VH3-30_VDJ_2021_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/VH3-30_VDJ_2021_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'VH4-59_VDJ_2021') {
+		cdrs <- data.table(xleft=c(76, 151, 283) - 0.3,
+										 xright=c(99, 174, 351) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/VH4-59_VDJ_2021_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/VH4-59_VDJ_2021_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/VH4-59_VDJ_2021_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/VH4-59_VDJ_2021_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'Ramos_VDJ_2021') {
+		cdrs <- data.table(xleft=c(67, 148, 275) - 0.3,
+										 xright=c(111, 189, 349) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/Ramos_VDJ_2021_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/Ramos_VDJ_2021_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/Ramos_VDJ_2021_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/Ramos_VDJ_2021_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'Ramos_IgH') {
+		cdrs <- data.table(xleft=c(3900, 3981, 4108) - 0.3,
+										 xright=c(3944, 4022, 4182) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/Ramos_IgH_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/Ramos_IgH_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/Ramos_IgH_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/Ramos_IgH_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'Sg1_VDJ_2021') {
+		cdrs <- data.table(xleft=c(3899, 3980, 4107) - 0.3,
+										 xright=c(2126, 2216, 2353) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/Sg1_VDJ_2021_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/Sg1_VDJ_2021_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/Sg1_VDJ_2021_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/Sg1_VDJ_2021_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'VH4-59') {
+		cdrs <- data.table(xleft=c(3908, 3983, 4115) - 0.3,
+										 xright=c(3931, 4006, 4183) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/VH4-59_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/VH4-59_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/VH4-59_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/VH4-59_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'B1-8hi') {
+		cdrs <- data.table(xleft=c(3923, 3980, 4111) - 0.3,
+										 xright=c(3937, 4027, 4192) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/B1-8hi_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/B1-8hi_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/B1-8hi_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/B1-8hi_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'VH3-30') {
+		cdrs <- data.table(xleft=c(3908, 3983, 4118) - 0.3,
+										 xright=c(3931, 4006, 4180) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/VH3-30_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/VH3-30_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/VH3-30_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/VH3-30_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+} else if(vdj == 'Bcl6_VDJ_2021') {
+		cdrs <- data.table(xleft=c(3908, 3983, 4118) - 0.3,
+										 xright=c(3931, 4006, 4180) + 0.3 ) # XXX: IDK
+	bedfw <- fread('reference_and_annotation/Bcl6_VDJ_2021_WRCH.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrv <- fread('reference_and_annotation/Bcl6_VDJ_2021_DGYW.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedfwn <- fread('reference_and_annotation/Bcl6_VDJ_2021_SYC.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
+	bedrvn <- fread('reference_and_annotation/Bcl6_VDJ_2021_GRS.bed', skip=1)[V3 >= showfrom & V2 <= showto, .(V1, V2, V3, V4)]
 } else {
 	stop('No BEDfile defined for the viewing window', vdj, '.')
 }
@@ -204,6 +297,8 @@ posdata[(sel), newpos := pos + as.integer(offset[3])]
 
 # Apply the viewing window
 posdata <- posdata[newpos >= showfrom & newpos <= showto, ]
+# filter chrom
+posdata <- posdata[chr %in% unique(bed$chr)]
 
 # Fill in gaps in the coordinates. Prevents plot lines from jumping across gaps.
 setorder(posdata, chr, newpos)

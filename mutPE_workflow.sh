@@ -124,6 +124,26 @@ elif [ "$vdj" == 'Ramos1' ] || [ "$vdj" == 'Ramos2' ] || [ "$vdj" == 'Ramos3' ] 
     # three='AGATCGGAAGAGC'
     # THREE='AGATCGGAAGAGC'
     # echo "Human VDJ adapters"
+elif [ "$vdj" == 'B18_VDJ_2021' ] || [ "$vdj" == 'B1-8hi' ]; then
+    five='NNNNNTCCACAGGTGTCCACTCCCAG' # read1 5'
+    three='GGTAAGAATGGCCACTCTAGG' # read1 3', revcomp of $FIVE
+    FIVE='CCTAGAGTGGCCATTCTTACC' # read2 5'
+    THREE='CTGGGAGTGGACACCTCTGGANNNNN' # read2 3', revcomp of $five
+elif [ "$vdj" == 'VH4-59_VDJ_2021' ] || [ "$vdj" == 'VH3-30_VDJ_2021' ] || [ "$vdj" == 'Ramos_VDJ_2021' ] || [ "$vdj" == 'Ramos_IgH' ] || [ "$vdj" == "VH4-59" ] || [ "$vdj" == 'VH3-30' ]; then
+    five='NNNNNTGTTCACAGGGGTCCTGTCC' # read1 5'
+    three='GGTAAGAATGGCCACTCTAGG' # read1 3', revcomp of $FIVE
+    FIVE='CCTAGAGTGGCCATTCTTACC' # read2 5'
+    THREE='GGACAGGACCCCTGTGAACANNNNN' # read2 3', revcomp of $five
+elif [ "$vdj" == 'Sg1_VDJ_2021' ]; then
+    five='NNNNNGAGGCCCAAGCGGAGCCAG' # read1 5'
+    three='CAGGGAGGGTGAGTGTGG' # read1 3', revcomp of $FIVE
+    FIVE='CCACACTCACCCTCCCTG' # read2 5'
+    THREE='CTGGCTCCGCTTGGGCCTCNNNNN' # read2 3', revcomp of $five
+elif [ "$vdj" == 'Bcl6_VDJ_2021' ]; then
+    five='NNNNNGCTTTGGCTCCAAGTTTTCTATG' # read1 5'
+    three='CTGCTGCTTGCGTACGGCTTG' # read1 3', revcomp of $FIVE
+    FIVE='CAAGCCGTACGCAAGCAGCAG' # read2 5'
+    THREE='CATAGAAAACTTGGAGCCAAAGCNNNNN' # read2 3', revcomp of $five
 else
     echo "$vdj is not among the pre-defined configurations for adapter trimming."
     exit 1

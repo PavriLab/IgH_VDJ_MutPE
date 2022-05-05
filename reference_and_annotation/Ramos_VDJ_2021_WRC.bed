@@ -1,0 +1,21 @@
+track name=WRC description="[ATat][AGag][Cc]" useScore=0
+Ramos_VDJ_wo_primers	4	7	tgc	0	+	4	7
+Ramos_VDJ_wo_primers	7	10	agc	0	+	7	10
+Ramos_VDJ_wo_primers	10	13	tac	0	+	10	13
+Ramos_VDJ_wo_primers	13	16	agc	0	+	13	16
+Ramos_VDJ_wo_primers	37	40	agc	0	+	37	40
+Ramos_VDJ_wo_primers	63	66	tgc	0	+	63	66
+Ramos_VDJ_wo_primers	93	96	tac	0	+	93	96
+Ramos_VDJ_wo_primers	96	99	tac	0	+	96	99
+Ramos_VDJ_wo_primers	115	118	agc	0	+	115	118
+Ramos_VDJ_wo_primers	165	168	agc	0	+	165	168
+Ramos_VDJ_wo_primers	171	174	aac	0	+	171	174
+Ramos_VDJ_wo_primers	174	177	tac	0	+	174	177
+Ramos_VDJ_wo_primers	177	180	aac	0	+	177	180
+Ramos_VDJ_wo_primers	226	229	aGc	0	+	226	229
+Ramos_VDJ_wo_primers	246	249	agc	0	+	246	249
+Ramos_VDJ_wo_primers	255	258	aac	0	+	255	258
+Ramos_VDJ_wo_primers	279	282	tac	0	+	279	282
+Ramos_VDJ_wo_primers	284	287	tgc	0	+	284	287
+Ramos_VDJ_wo_primers	296	299	tac	0	+	296	299
+Ramos_VDJ_wo_primers	327	330	tac	0	+	327	330
