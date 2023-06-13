@@ -20,3 +20,8 @@ Dependencies are assumed to be loaded in advance in the execution environment, t
 * flash 1.2.11 (the read-pair merging tool, not Adobe Flash!)
 * bowtie2 2.3.5
 * samtools 1.9
+
+# How to Run
+
+See here: [how_to_run.md](how_to_run.md)
+
